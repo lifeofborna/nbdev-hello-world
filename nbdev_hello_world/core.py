@@ -3,5 +3,8 @@
 # %% auto 0
 __all__ = ['addition']
 
-# %% ../nbs/00_core.ipynb 6
+# %% ../nbs/00_core.ipynb 7
 def addition(a,b): return a+b
+test_eq(addition(1,2), 3)
+test_eq(addition(-1,0), -1)
+test_eq(addition(1,2), 3)

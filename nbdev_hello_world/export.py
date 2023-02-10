@@ -7,23 +7,20 @@ from __future__ import annotations
 __all__ = ['ExportTestProc', 'get_directive', 'convert_pytest', 'construct_imports', 'create_test_modules']
 
 # %% ../nbs/01_export.ipynb 3
-from nbprocess.process import *
-from nbprocess.read import *
-from nbprocess.imports import *
-from nbprocess.maker import *
-
-# from nbprocess.processors import _default_exp
+from nbdev.process import *
+from nbdev.imports import *
+from nbdev.maker import *
 
 # %% ../nbs/01_export.ipynb 5
 from collections import defaultdict
 from fastcore.foundation import L, ifnone
 from execnb.nbio import *
-#Check if path is correct
+
 class ExportTestProc:
     "A test proc that watches for `#|default_exp` and `#|test`"
     def __init__(self): self.tests = defaultdict(L)
-    def _default_exp_(self, nbp, cell, exp_to): self.default_exp = f'test_{exp_to}'
-    def _test_(self, nbp, cell, exp_to=None, nm=None, tst_cls=None): self.tests[self.default_exp].append(nbp.cell)
+    def _default_exp_(self, cell, exp_to): self.default_exp = f'test_{exp_to}'
+    def _test_(self, cell, exp_to=None, nm=None, tst_cls=None): self.tests[self.default_exp].append(cell)
 
 # %% ../nbs/01_export.ipynb 6
 _re_test = re.compile(r'#\|\s*test\s*$', re.MULTILINE)
@@ -35,7 +32,7 @@ def get_directive(cell, key, default=None):
     "Extract a top level directive from `cell`"
     return cell.directives_.get(key, default)
 
-def _is_test_cell(cell): return cell.cell_type == "code" and get_directive(cell, "test")
+def _is_test_cell(cell): return cell.cell_type == "code" and get_directive(cell,'test')
 
 # %% ../nbs/01_export.ipynb 9
 def convert_pytest(cell, unittest=False):
@@ -77,12 +74,12 @@ def create_test_modules(path, dest, debug=False, mod_maker=ModuleMaker, unittest
     if unittest: procs.append(convert_unittest)
 
     class InsertWarning(Processor):
-        content = ""
+        content = functools.partial(construct_imports, unittest=unittest)
         def begin(self): self.nb.cells.insert(1, mk_cell(self.content, 'markdown'))
-
+    
     nb = NBProcessor(path, procs)
     insert_warning = InsertWarning(nb)
-    nb.preprocs = [insert_warning]
+    nb.preprocs = insert_warning
     nb.process()
     for i,(mod,cells) in enumerate(exp.tests.items()):
         mm = mod_maker(dest=dest, name=exp.default_exp, nb_path=path, is_new=i==0, parse=False)
