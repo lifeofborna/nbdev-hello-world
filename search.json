@@ -1,0 +1,37 @@
+[
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "Export tests Proof-of-Concept",
+    "section": "",
+    "text": "from fastcore.test import *\nfrom nbdev import *\n\nWe use #|import to describe test-specific imports that should be used that aren’t included in the exported modules, such as fastcore.test.\n\nsource\n\naddition\n\n addition (a, b)\n\nTests are defined as #|test {testname} when declared in the pytest-enabled framework.\nBelow is a mockup of what the exported test class should then look like:\n\nimport unittest\n\nclass CoreTest(unittest.TestCase):\n    def test_addition(self):\n        test_eq(addition(1,2), 3)\n        test_eq(addition(-1,0), -1)\n\n\ndef run_case(testcase:unittest.TestCase):\n    \"Runs a unittest.TestCase\"\n    suite = unittest.defaultTestLoader.loadTestsFromTestCase(testcase)\n    unittest.TextTestRunner().run(suite)\n\n\nrun_case(CoreTest)\n\n.\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK"
+  },
+  {
+    "objectID": "export.html",
+    "href": "export.html",
+    "title": "core",
+    "section": "",
+    "text": "_test_file = \"00_core.ipynb\"\n\n\nsource\n\nExportTestProc\n\n ExportTestProc ()\n\nA test proc that watches for #|default_exp and #|test\n\nsource\n\n\nget_directive\n\n get_directive (cell, key, default=None)\n\nExtract a top level directive from cell\n\ndef _mark_test(s):\n    ft = exec_new(\"import fastcore.test as ft\")[\"ft\"].__all__\n    kinds = [(o,f'ft.{o}') for o in ft if o.startswith(\"test_\")]\n    for k,v in kinds: s = s.replace(k,v)\n    return s\n\n\nsource\n\n\nconvert_pytest\n\n convert_pytest (cell, unittest=False)\n\nWraps cell contents into a pytest function\n\nsource\n\n\nconstruct_imports\n\n construct_imports (nb, unittest=False)\n\nGenerates the test imports for the notebook\n\nsource\n\n\ncreate_test_modules\n\n create_test_modules (path, dest, debug=False, mod_maker=<class\n                      'nbdev.maker.ModuleMaker'>, unittest=False)\n\nCreates test files from path, optionally with unittest support\n\ncreate_test_modules(_test_file, \"v3\")\n\n\n!pytest v3/\n\n============================= test session starts ==============================\nplatform linux -- Python 3.10.4, pytest-7.2.1, pluggy-1.0.0\nrootdir: /home/borna/nbdev-hello-world\nplugins: cov-4.0.0, nbval-0.10.0\ncollected 1 item                                                               \n\nv3/test_core.py .                                                        [100%]\n\n============================== 1 passed in 0.08s ==============================="
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "nbdev-hello-world",
+    "section": "",
+    "text": "This file will become your README and also the index of your documentation."
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "nbdev-hello-world",
+    "section": "Install",
+    "text": "Install\npip install nbdev_hello_world"
+  },
+  {
+    "objectID": "index.html#how-to-use",
+    "href": "index.html#how-to-use",
+    "title": "nbdev-hello-world",
+    "section": "How to use",
+    "text": "How to use\nFill me in please! Don’t forget code examples:\n\n1+1\n\n2"
+  }
+]
